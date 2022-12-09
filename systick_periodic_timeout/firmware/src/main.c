@@ -61,6 +61,7 @@
 #include "moden.h"
 #include "appiot.h"
 #include "app.h"
+#include "appadc.h"
 #include "appemueeprom.h"
 
 void timeout_handler(uintptr_t context)
@@ -92,16 +93,17 @@ int main ( void )
 {
     /* Initialize all modules */
     SYS_Initialize ( NULL );
+    
+    SYSTICK_TimerCallbackSet(&timeout_handler, (uintptr_t) NULL);
+    SYSTICK_TimerStart();
+    
     initmachinestates();
     init_moden();
     init_can();
     appurat_init();
     appurat_debug_init();
     init_iot();
-    emnueeprom_init();
-    
-    SYSTICK_TimerCallbackSet(&timeout_handler, (uintptr_t) NULL);
-    SYSTICK_TimerStart();
+    emnueeprom_init(); 
     
     SYSTICK_DelayMs(10000);
 
@@ -125,6 +127,12 @@ int main ( void )
             //SYSTICK_DelayMs(100);
         }
         */
+        /*
+        {
+            adc_convertion_fun();
+            SYSTICK_DelayMs(100);
+        }
+        */
     /* Execution should not come here during normal operation */
 
     
@@ -134,4 +142,3 @@ int main ( void )
 /*******************************************************************************
  End of File
 */
-

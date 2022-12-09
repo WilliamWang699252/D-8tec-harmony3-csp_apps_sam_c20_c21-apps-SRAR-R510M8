@@ -62,13 +62,13 @@ files:
   security: NON_SECURE
   type: SOURCE
   userChecksum: null
-- generatedChecksum: 22C610AB71995F7E3564825B137A6A17
+- generatedChecksum: 52F972C61D023947BBF668A8061ECA9E
   logicalPath: config/sam_c21n_xpro/peripheral/adc
   name: plib_adc0.c
   physicalPath: peripheral/adc
   security: NON_SECURE
   type: SOURCE
-  userChecksum: 22C610AB71995F7E3564825B137A6A17
+  userChecksum: 52F972C61D023947BBF668A8061ECA9E
 - generatedChecksum: 851B0ABB4C293DC76C263D8CB7EFB3F6
   logicalPath: config/sam_c21n_xpro/peripheral/can
   name: plib_can0.c
@@ -1105,13 +1105,13 @@ files:
   security: NON_SECURE
   type: LINKER
   userChecksum: 46A218D72FBCFD4D8A17275245F060BB
-- generatedChecksum: 4683F69171B66F72B56DE5D300C6380D
+- generatedChecksum: 02988F9242F294B24E2B825D9FD8ECE4
   logicalPath: ''
   name: pin_configurations.csv
   physicalPath: ''
   security: NON_SECURE
   type: IMPORTANT
-  userChecksum: 4683F69171B66F72B56DE5D300C6380D
+  userChecksum: 02988F9242F294B24E2B825D9FD8ECE4
 format_version: v1.0
 libraries: []
 settings:

@@ -4,16 +4,77 @@ attributes: {id: lib_emulated_eeprom}
 children:
 - type: Symbols
   children:
+  - type: Combo
+    attributes: {id: EEPROM_EMULATOR_ADDRESS_SPACE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
   - type: Integer
     attributes: {id: EEPROM_EMULATOR_EEPROM_LOGICAL_SIZE}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
         attributes: {id: lib_emulated_eeprom, value: '1800'}
+  - type: Integer
+    attributes: {id: EEPROM_EMULATOR_EEPROM_SIZE}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: lib_emulated_eeprom, value: '4096'}
+  - type: Comment
+    attributes: {id: EEPROM_EMULATOR_EEPROM_SIZE_CONFIG_COMMENT1}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Comment
+    attributes: {id: EEPROM_EMULATOR_EEPROM_SIZE_CONFIG_COMMENT_2}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
+  - type: Comment
+    attributes: {id: EEPROM_EMULATOR_EEPROM_SIZE_CONFIG_COMMENT_3}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
   - type: Hex
     attributes: {id: EEPROM_EMULATOR_EEPROM_START_ADDRESS}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -28,6 +89,12 @@ children:
   - type: Boolean
     attributes: {id: EEPROM_EMULATOR_MAIN_ARRAY_ENABLED}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -56,6 +123,12 @@ children:
   - type: Integer
     attributes: {id: EEPROM_EMULATOR_NUM_LOGICAL_PAGES}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -63,6 +136,12 @@ children:
   - type: Integer
     attributes: {id: EEPROM_EMULATOR_NUM_PHYSICAL_PAGES}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: visible}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -123,6 +202,15 @@ children:
       children:
       - type: Dynamic
         attributes: {id: lib_emulated_eeprom, value: '4194304'}
+  - type: Setting
+    attributes: {id: XC32_LINKER_MACRO_ROM_LENGTH}
+    children:
+    - type: Attributes
+      children:
+      - type: String
+        attributes: {id: value}
+        children:
+        - {type: Value, value: ROM_LENGTH=0x3f000}
 - type: Attachments
   children:
   - type: DirectDependency

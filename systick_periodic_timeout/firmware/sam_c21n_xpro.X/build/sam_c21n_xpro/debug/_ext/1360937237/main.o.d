@@ -129,7 +129,7 @@ build/sam_c21n_xpro/debug/_ext/1360937237/main.o: ../src/main.c \
  ../src/config/sam_c21n_xpro/peripheral/can/plib_can_common.h \
  ../src/appuart.h ../src/app_uart_debug.h ../src/apptimer.h \
  ../src/moden.h ../src/app.h ../src/appiot.h ../src/iot_msg.h \
- ../src/appemueeprom.h
+ ../src/appadc.h ../src/appemueeprom.h
 
 ../src/config/sam_c21n_xpro/definitions.h:
 
@@ -402,5 +402,7 @@ build/sam_c21n_xpro/debug/_ext/1360937237/main.o: ../src/main.c \
 ../src/appiot.h:
 
 ../src/iot_msg.h:
+
+../src/appadc.h:
 
 ../src/appemueeprom.h:

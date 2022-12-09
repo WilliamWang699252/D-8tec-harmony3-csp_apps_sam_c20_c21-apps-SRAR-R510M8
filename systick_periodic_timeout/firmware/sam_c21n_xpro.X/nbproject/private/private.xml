@@ -6,9 +6,12 @@
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/packs/CMSIS/CMSIS/Core/Include/cmsis_gcc.h</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/appiot.h</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/appuart.h</file>
+            <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/config/sam_c21n_xpro/initialization.c</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/appiot.c</file>
+            <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/appadc.c</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/main.c</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/iot_msg.h</file>
+            <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/appadc.h</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/appemueeprom.h</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/config/sam_c21n_xpro/library/emulated_eeprom/emulated_eeprom.h</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/packs/CMSIS/CMSIS/Core/Include/core_cm0plus.h</file>
@@ -19,6 +22,7 @@
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/canapp.c</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/moden.h</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/canapp.h</file>
+            <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/config/sam_c21n_xpro/peripheral/port/plib_port.h</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/apptimer.h</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/apptimer.c</file>
             <file>file:/D:/8tec/harmony3/csp_apps_sam_c20_c21/apps/SRAR-R510M8/systick_periodic_timeout/firmware/src/app_uart_debug.c</file>

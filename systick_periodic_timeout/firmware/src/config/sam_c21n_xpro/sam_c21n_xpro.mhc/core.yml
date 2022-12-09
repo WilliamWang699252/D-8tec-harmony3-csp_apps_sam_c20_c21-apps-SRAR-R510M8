@@ -1480,7 +1480,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: AC_AIN5}
+        attributes: {value: ADC0_AIN1/VREFP}
   - type: String
     attributes: {id: PIN_4_MODE}
     children:
