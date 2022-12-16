@@ -21,9 +21,9 @@
 #define AT_GPS_TIMEOUT_MS                                     5000  //5SEC
 #define AT_MQTT_TX_UP_DATA1_TIMEOUT_MS                        10000 //10SEC
 #define AT_READ_TIMEOUT_MS                                    10000 //10SEC
-#define AT_RESET_INITIAL_TIMEOUT_MS                           (1000*60) //60SEC  
+#define AT_RESET_INITIAL_TIMEOUT_MS                           (5*1000)//(1000*60) //60SEC  
 
-#define AT_ERROR_RESET_INITIAL_COUNT 3
+#define AT_ERROR_RESET_INITIAL_COUNT 1
 #define AT_GPS_READ_TIME                                      (1000*10) //10SEC 
 
 MODEN_COMMAND_DATA _moden_cmd_data;
@@ -55,6 +55,7 @@ void init_moden(void){
     memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
     _moden.lte_4G_RX_flag = 0;
     _moden.lte_4G_RX_count = 0;
+    _moden.lte_4G_RX_DOWN_PUB_flag = 0;
     memset(_moden.lte_4G_RX_data,0,sizeof(_moden.lte_4G_RX_data));
     _moden.lte_4G_TX_error_count = 0;
     _moden.lte_4G_RX_error_count = 0;
@@ -66,6 +67,13 @@ void init_moden(void){
     
     memset(_moden.lte_4G_latitude,0,sizeof(_moden.lte_4G_latitude));
     memset(_moden.lte_4G_longitude,0,sizeof(_moden.lte_4G_longitude));
+    
+    _moden.year = 20;
+    _moden.month = 1;
+    _moden.date = 1;
+    _moden.hour = 1;
+    _moden.minute = 1;
+    _moden.second = 1;
         
     memset(buffer,0,sizeof(buffer));    
     memset(rxBuffer,0,sizeof(rxBuffer)); 
@@ -205,7 +213,7 @@ void moden_main(void){
                 
                 #ifdef AT_UART_DEBUG_ON
                     char string[100];
-                    sprintf(string,"ERROR:LTE 4G RESET INITIAL");
+                    sprintf(string,"ERROR:LTE 4G RESET INITIAL\r\n");
                     uart_debug_megssage((uint8_t*)string, strlen(string));
                 #endif
                 
@@ -2019,6 +2027,37 @@ void SendATCOmmand(void){
                 float latitude,longitude,tmp_float;
                 int32_t tmp1_int32; 
                 
+                adr = strstr((char *)platformrxbuffer,"$GNRMC,");
+                adr += 7;
+                if(*adr != ','){
+                    uint32_t i,tmp_32_1;
+                    
+                    tmp_32_1 = atoi(adr);
+                    _moden.second  = tmp_32_1 % 100;
+                    tmp_32_1 = tmp_32_1 /100;
+                    _moden.minute  = tmp_32_1 % 100;
+                    tmp_32_1 = tmp_32_1 /100;
+                    _moden.hour  = tmp_32_1 % 100;
+                    
+                    for(i=0;i<8;){
+                       if(*adr == ','){
+                           i++;
+                           if(i == 8)
+                               break;
+                       } 
+                       adr++;
+                    }    
+                    adr++;
+                    
+                    tmp_32_1 = atoi(adr);
+                    _moden.year  = tmp_32_1 % 100;
+                    tmp_32_1 = tmp_32_1 /100;
+                    _moden.month  = tmp_32_1 % 100;
+                    tmp_32_1 = tmp_32_1 /100;
+                    _moden.date = tmp_32_1 % 100;
+                }
+                
+                
                 adr = strstr((char *)platformrxbuffer,",A,");
                 if(adr != 0){
                     adr += 3;
@@ -2267,7 +2306,7 @@ void SendATCOmmand(void){
             break;
     }
     
-    if((readmodenstatue()== moden_ready) && (_moden.AT_state == _AT_MQTT_TX_UP_DATA1_FINISH)){
+    if((readmodenstatue()== moden_ready) && (_moden.AT_state == _AT_MQTT_TX_UP_DATA1_FINISH)){       
         
         switch(_moden.AT_READ_state){
             case _AT_RAED_LISTEN_CMD:
@@ -2276,11 +2315,12 @@ void SendATCOmmand(void){
                     char *adr2;
                     
                     adr1 = strstr((const char *)rxBuffer,(const char *)"+UUMQTTC: 6,");
+                    if(adr1 == 0) break;
                     adr1 += strlen("+UUMQTTC: 6,");
                     adr2 = strstr((const char *)adr1,(const char *)"\r\n");
                     if(adr2 != 0){
                         _moden.lte_4G_RX_count = atoi((const char *)adr1);
-                        _moden.AT_READ_state = _AT_RAED_ACTION_CMD;
+                        _moden.AT_READ_state = _AT_RAED_ACTION_CMD;                       
                     }
                 }
                 
@@ -2352,6 +2392,13 @@ void SendATCOmmand(void){
                     adr1 = strstr((char *)platformrxbuffer,(char *)"/DOWN\",");
                     adr2 = strstr((char *)platformrxbuffer,(char *)"/PUB\",");
                     if((adr1 != 0) || (adr2 != 0)){
+                        
+                        if(adr1 != 0)
+                            _moden.lte_4G_RX_DOWN_PUB_flag = 1;
+                        
+                        if(adr2 != 0)
+                            _moden.lte_4G_RX_DOWN_PUB_flag = 2;
+                        
                         adr1 = strstr((char *)platformrxbuffer,(char *)",\"{");
                         adr1 += strlen(",\"{");
                         adr2 = strstr((char *)platformrxbuffer,(char *)"}\"\r\n");

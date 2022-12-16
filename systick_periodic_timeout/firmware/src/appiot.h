@@ -125,7 +125,14 @@ typedef struct
     /* The application's current state */
       IOT_STATES state;
     /* TODO: Define any additional data used by the application. */
-
+      char UUID[16];
+      char PCBUUID[32];
+      uint8_t device_status; //00:?? 01:?? 02:?? 03:?? 10:?? 20:??? 21:??
+      uint8_t lock_status;   //???????
+      uint8_t BKPOW_status;  //??????0-5
+      uint8_t unlock_OK;  //unlock OK:1 FAIL:2
+      uint8_t lock_OK;  //lock OK:1 FAIL:2
+      uint8_t dev_open_box_OK;  //open OK:1 FAIL:2
 } IOT_DATA;
 
 typedef struct

@@ -8,6 +8,8 @@
 #include "moden.h"
 #include "canapp.h"
 #include "appemueeprom.h"
+#include "app_uart_debug.h"
+
 #define CGPSINFO_MAX_LEN				(64)
 
 #define IOT_SEND_DATA_MS    (1000*60) //1min
@@ -76,11 +78,260 @@ void updateiotodo(uint32_t odo){
 
 void iot_main(void){
     
-    if((timer1ms - iot_send_data_tick) > IOT_SEND_DATA_MS){
+    if((_moden.lte_4G_TX_flag == 0) && ((timer1ms - iot_send_data_tick) > IOT_SEND_DATA_MS)){
         iot_data_pack(0);
         _moden.lte_4G_TX_flag = 1;
         iot_send_data_tick = timer1ms;
     }
+    
+    /*
+    if(_moden.lte_4G_TX_flag == 0) {
+        static uint8_t state=0;
+        
+        switch(state){
+            
+            case 0:
+                iot_data_pack(0);
+                _moden.lte_4G_TX_flag = 1;
+                state++;
+                break;
+            case 1:
+                iot_data_pack(1);
+                _moden.lte_4G_TX_flag = 1;
+                state++;
+                break;
+            case 2:
+                _iotdata.unlock_OK = 1;
+                iot_data_pack(2);
+                _moden.lte_4G_TX_flag = 1;
+                state++;
+                break;
+            case 3:
+                _iotdata.unlock_OK = 2;
+                iot_data_pack(2);
+                _moden.lte_4G_TX_flag = 1;
+                state++;
+                break;
+            case 4:
+                _iotdata.lock_OK = 1;
+                iot_data_pack(3);
+                _moden.lte_4G_TX_flag = 1;
+                state++;
+                break;
+            case 5:
+                _iotdata.lock_OK = 2;
+                iot_data_pack(3);
+                _moden.lte_4G_TX_flag = 1;
+                state++;
+                break;
+            case 6:
+                _iotdata.dev_open_box_OK = 1;
+                iot_data_pack(4);
+                _moden.lte_4G_TX_flag = 1;
+                state++;
+                break;
+            case 7:
+                _iotdata.dev_open_box_OK = 2;
+                iot_data_pack(4);
+                _moden.lte_4G_TX_flag = 1;
+                state++;
+                break;
+        }
+    }
+    */
+    if(_moden.lte_4G_RX_flag == 1){
+        
+        _moden.lte_4G_RX_flag = 0;
+        
+        //DEVCHKLIST
+        if(strstr((char *)_moden.lte_4G_RX_data,"DEVCHKLIST")){
+                
+            char * adr;
+            
+            adr = strstr((char *)_moden.lte_4G_RX_data,"UUID\": \"");
+            if(adr){
+                adr += 8;
+            }
+                
+            if(adr == 0){
+                adr = strstr((char *)_moden.lte_4G_RX_data,"UUID\":\"");
+                if(adr){
+                    adr += 7;
+                }
+            }
+            
+            memcpy(_iotdata.UUID,adr,sizeof(_iotdata.UUID)); 
+                
+            adr = strstr((char *)_moden.lte_4G_RX_data,"PCBUUID\": \"");
+            if(adr){
+                adr += 11;
+            }
+                
+            if(adr == 0){
+                adr = strstr((char *)_moden.lte_4G_RX_data,"PCBUUID\":\"");
+                if(adr){
+                    adr += 10;
+                }
+            }
+                       
+            memcpy(_iotdata.PCBUUID,adr,sizeof(_iotdata.PCBUUID)); 
+                                   
+            //DOWN
+            if(_moden.lte_4G_RX_DOWN_PUB_flag == 1)
+                adr = strstr(_iotdata.PCBUUID,(char *)_moden.moden_uuid_md5);
+            
+            uart_debug_megssage((uint8_t*)_iotdata.PCBUUID, strlen(_iotdata.PCBUUID));
+            uart_debug_megssage((uint8_t*)"\r\n", 2);
+            uart_debug_megssage((uint8_t*)_moden.moden_uuid_md5, strlen((char *)_moden.moden_uuid_md5));
+            uart_debug_megssage((uint8_t*)"\r\n", 2);
+                
+            if(((adr != 0) && (_moden.lte_4G_RX_DOWN_PUB_flag == 1)) || (_moden.lte_4G_RX_DOWN_PUB_flag == 2)){
+                
+                iot_data_pack(1);
+                _moden.lte_4G_TX_flag = 1;
+            }                
+        }    
+        //DEVLOGIN
+        else if(strstr((char *)_moden.lte_4G_RX_data,"DEVLOGIN")){
+                
+            _iotdata.device_status = 1;
+        }
+        //DEVLOGOUT
+        else if(strstr((char *)_moden.lte_4G_RX_data,"DEVLOGOUT")){
+                
+            _iotdata.device_status = 0;
+        }
+        //DEVUNLOCK
+        else if(strstr((char *)_moden.lte_4G_RX_data,"DEVUNLOCK")){
+                
+            char * adr;
+            
+            adr = strstr((char *)_moden.lte_4G_RX_data,"UUID\": \"");
+            if(adr){
+                adr += 8;
+            }
+                
+            if(adr == 0){
+                adr = strstr((char *)_moden.lte_4G_RX_data,"UUID\":\"");
+                if(adr){
+                    adr += 7;
+                }
+            }
+            
+            memcpy(_iotdata.UUID,adr,sizeof(_iotdata.UUID)); 
+                
+            adr = strstr((char *)_moden.lte_4G_RX_data,"PCBUUID\": \"");
+            if(adr){
+                adr += 11;
+            }
+                
+            if(adr == 0){
+                adr = strstr((char *)_moden.lte_4G_RX_data,"PCBUUID\":\"");
+                if(adr){
+                    adr += 10;
+                }
+            }
+                
+            memcpy(_iotdata.PCBUUID,adr,sizeof(_iotdata.PCBUUID)); 
+            
+            //DOWN
+            if(_moden.lte_4G_RX_DOWN_PUB_flag == 1)
+                adr = strstr(_iotdata.PCBUUID,(char *)_moden.moden_uuid_md5);
+                
+            if(((adr != 0) && (_moden.lte_4G_RX_DOWN_PUB_flag == 1)) || (_moden.lte_4G_RX_DOWN_PUB_flag == 2)){
+                
+                iot_data_pack(2);
+                _moden.lte_4G_TX_flag = 1;
+            }
+        }
+        //DEVLOCK
+        else if(strstr((char *)_moden.lte_4G_RX_data,"DEVLOCK")){
+            
+            char * adr;
+            
+            adr = strstr((char *)_moden.lte_4G_RX_data,"UUID\": \"");
+            if(adr){
+                adr += 8;
+            }
+                
+            if(adr == 0){
+                adr = strstr((char *)_moden.lte_4G_RX_data,"UUID\":\"");
+                if(adr){
+                    adr += 7;
+                }
+            }
+            
+            memcpy(_iotdata.UUID,adr,sizeof(_iotdata.UUID)); 
+                
+            adr = strstr((char *)_moden.lte_4G_RX_data,"PCBUUID\": \"");
+            if(adr){
+                adr += 11;
+            }
+                
+            if(adr == 0){
+                adr = strstr((char *)_moden.lte_4G_RX_data,"PCBUUID\":\"");
+                if(adr){
+                    adr += 10;
+                }
+            }
+                
+            memcpy(_iotdata.PCBUUID,adr,sizeof(_iotdata.PCBUUID));  
+            
+            //DOWN
+            if(_moden.lte_4G_RX_DOWN_PUB_flag == 1)
+                adr = strstr(_iotdata.PCBUUID,(char *)_moden.moden_uuid_md5);
+                
+            if(((adr != 0) && (_moden.lte_4G_RX_DOWN_PUB_flag == 1)) || (_moden.lte_4G_RX_DOWN_PUB_flag == 2)){
+                iot_data_pack(3);
+                _moden.lte_4G_TX_flag = 1;
+            }
+        }
+        //DEVOPENBOX
+        else if(strstr((char *)_moden.lte_4G_RX_data,"DEVOPENBOX")){
+                
+            char * adr;
+            
+            adr = strstr((char *)_moden.lte_4G_RX_data,"UUID\": \"");
+            if(adr){
+                adr += 8;
+            }
+                
+            if(adr == 0){
+                adr = strstr((char *)_moden.lte_4G_RX_data,"UUID\":\"");
+                if(adr){
+                    adr += 7;
+                }
+            }
+            
+            memcpy(_iotdata.UUID,adr,sizeof(_iotdata.UUID)); 
+                
+            adr = strstr((char *)_moden.lte_4G_RX_data,"PCBUUID\": \"");
+            if(adr){
+                adr += 11;
+            }
+                
+            if(adr == 0){
+                adr = strstr((char *)_moden.lte_4G_RX_data,"PCBUUID\":\"");
+                if(adr){
+                    adr += 10;
+                }
+            }
+            
+            memcpy(_iotdata.PCBUUID,adr,sizeof(_iotdata.PCBUUID));
+            
+            //DOWN
+            if(_moden.lte_4G_RX_DOWN_PUB_flag == 1)
+                adr = strstr(_iotdata.PCBUUID,(char *)_moden.moden_uuid_md5);
+                
+            if(((adr != 0) && (_moden.lte_4G_RX_DOWN_PUB_flag == 1)) || (_moden.lte_4G_RX_DOWN_PUB_flag == 2)){
+                iot_data_pack(4);
+                _moden.lte_4G_TX_flag = 1;
+            }
+        }
+        
+        _moden.lte_4G_RX_DOWN_PUB_flag = 0;
+    }
+    
     
     switch(_iotdata.state){
         case IOT_SLEEP:
@@ -127,33 +378,26 @@ void setmqttstates(MACHINE_STATES data){
 void iot_data_pack(uint8_t pack_num){
     
     uint16_t lens;
+    char char_tmp[50];
     
     switch(pack_num){
-        
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-            
-        default:
-            
+        //DEVPING
+        case 0:            
             memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
             sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PCBUUID':'%s',",_moden.moden_uuid_md5); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '2020-04-08:05:23:00',"); 
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
+                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD': 'DEVPING',"); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BASIC': {");
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)" 'MOTOVER': 'V0.1',");
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)" 'MOTOVER': '%s',",motor_version);
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'IOTVER': 'V0.1',");
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'IOTVER': '%s',",iot_version);
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'DEVSTU': '00',");
             lens = strlen((char *)_moden.lte_4G_TX_data);
@@ -184,6 +428,160 @@ void iot_data_pack(uint8_t pack_num){
             fill_motoavgpower((char *)&_moden.lte_4G_TX_data[lens]);
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"}}}\"\r\n"); 
+            
+            break;
+        //DEVCHKLIST
+        case 1:
+            memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
+            sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            memset(char_tmp,0,sizeof(char_tmp));
+            memcpy(char_tmp,_iotdata.UUID,sizeof(_iotdata.UUID));
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'UUID':'%s',",char_tmp); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);            
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
+                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD': 'DEVCHKLIST',"); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BASIC': {");
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)" 'MOTOVER': '%s',",motor_version);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'IOTVER': '%s',",iot_version);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'DEVSTU': '%d',",_iotdata.device_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LOCKSTU': '%d',",_iotdata.lock_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BKPOW': '%d',",_iotdata.BKPOW_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);   
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'GPSPOS': '%s,%s'",_moden.lte_4G_longitude,_moden.lte_4G_latitude);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"}}\"\r\n"); 
+                    
+            break;
+        //unlock
+        case 2:
+            memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
+            sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            memset(char_tmp,0,sizeof(char_tmp));
+            memcpy(char_tmp,_iotdata.UUID,sizeof(_iotdata.UUID));
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'UUID':'%s',",char_tmp); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);            
+            
+            if(_iotdata.unlock_OK == 2){ //fail
+                sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
+                lens = strlen((char *)_moden.lte_4G_TX_data);
+            }
+            
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
+                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            
+            if(_iotdata.unlock_OK == 1) //OK
+                sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD':'DEVUNLOCKOK',"); 
+            //FAIL
+            else
+                sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD':'DEVUNLOCKFAIL',"); 
+                            
+            lens = strlen((char *)_moden.lte_4G_TX_data);  
+            
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BASIC': {");
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'DEVSTU': '%d',",_iotdata.device_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LOCKSTU': '%d',",_iotdata.lock_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BKPOW': '%d',",_iotdata.BKPOW_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);   
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'GPSPOS': '%s,%s'",_moden.lte_4G_longitude,_moden.lte_4G_latitude);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"}}\"\r\n"); 
+            
+            break;
+        //lock
+        case 3:
+            memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
+            sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            memset(char_tmp,0,sizeof(char_tmp));
+            memcpy(char_tmp,_iotdata.UUID,sizeof(_iotdata.UUID));
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'UUID':'%s',",char_tmp); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);            
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
+                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            
+            if(_iotdata.lock_OK == 1) //OK
+                sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD':'DEVLOCKOK',"); 
+            //FAIL
+            else
+                sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD':'DEVLOCKFAIL',"); 
+                            
+            lens = strlen((char *)_moden.lte_4G_TX_data);  
+            
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BASIC': {");
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'DEVSTU': '%d',",_iotdata.device_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LOCKSTU': '%d',",_iotdata.lock_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BKPOW': '%d',",_iotdata.BKPOW_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);   
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'GPSPOS': '%s,%s'",_moden.lte_4G_longitude,_moden.lte_4G_latitude);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"}}\"\r\n"); 
+            
+            break;
+        //open box    
+        case 4:
+            memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
+            sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            memset(char_tmp,0,sizeof(char_tmp));
+            memcpy(char_tmp,_iotdata.UUID,sizeof(_iotdata.UUID));
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'UUID':'%s',",char_tmp); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);            
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
+                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            
+            if(_iotdata.dev_open_box_OK == 1) //OK
+                sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD':'DEVOPENBOXOK',"); 
+            //FAIL
+            else
+                sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD':'DEVOPENBOXFAIL',"); 
+            
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BASIC': {");
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'DEVSTU': '%d',",_iotdata.device_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LOCKSTU': '%d',",_iotdata.lock_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BKPOW': '%d',",_iotdata.BKPOW_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);   
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'GPSPOS': '%s,%s'",_moden.lte_4G_longitude,_moden.lte_4G_latitude);
+            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"}}\"\r\n"); 
+            
+            break;
+        case 5:
+            
+            break;
+        case 6:
+            
+            break;
+        default:
             
             break;
     }   

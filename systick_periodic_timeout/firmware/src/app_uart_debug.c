@@ -10,6 +10,7 @@
 #include "definitions.h"                // SYS function prototypes
 #include "moden.h"
 #include "appuart.h"
+#include "app_uart_debug.h"
 
 void usart_debug_ReadEventHandler(SERCOM_USART_EVENT event, uintptr_t context )
 {

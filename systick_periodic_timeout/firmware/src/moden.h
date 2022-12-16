@@ -184,6 +184,7 @@ typedef struct MODEN_DATA
    uint8_t lte_4G_TX_data[UART_TX_RX_SIZE];
    uint8_t lte_4G_RX_flag;
    uint16_t lte_4G_RX_count;
+   uint8_t lte_4G_RX_DOWN_PUB_flag;  // 1:DOWN 2:PUB
    uint8_t lte_4G_RX_data[UART_TX_RX_SIZE];
    uint8_t lte_4G_TX_error_count;
    uint8_t lte_4G_RX_error_count;
@@ -195,6 +196,14 @@ typedef struct MODEN_DATA
    uint32_t lte_4G_gps_tick;
    uint8_t  lte_4G_latitude[20];
    uint8_t  lte_4G_longitude[20];
+   
+   uint8_t  year;
+   uint8_t  month;
+   uint8_t  date;
+   uint8_t  hour;
+   uint8_t  minute;
+   uint8_t  second;
+   
 } MODEN_DATA;
 
 extern MODEN_COMMAND_DATA _moden_cmd_data;
