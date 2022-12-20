@@ -56,6 +56,7 @@ extern "C" {
 #ifdef message_debug_ON
     #define AT_UART_DEBUG_ON
     #define AT_CAN_DEBUG_ON
+    #define AT_IOT_DEBONG_ON
 #endif
 
 extern uint8_t motor_version[5]; 

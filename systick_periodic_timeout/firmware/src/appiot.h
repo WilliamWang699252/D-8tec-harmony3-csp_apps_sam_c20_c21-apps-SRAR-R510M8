@@ -133,6 +133,14 @@ typedef struct
       uint8_t unlock_OK;  //unlock OK:1 FAIL:2
       uint8_t lock_OK;  //lock OK:1 FAIL:2
       uint8_t dev_open_box_OK;  //open OK:1 FAIL:2
+      
+      uint8_t  year;
+      uint8_t  month;
+      uint8_t  date;
+      uint8_t  hour;
+      uint8_t  minute;
+      uint8_t  second;   
+      uint32_t utc_number;
 } IOT_DATA;
 
 typedef struct
@@ -190,6 +198,7 @@ typedef struct
    /* TODO: Define any additional data used by the application. */
 }IOT_TIMER;
 extern IOT_TIMER _iottimer;
+extern IOT_DATA _iotdata;
 
 void iot_init(iot_init_t* init);
 void iot_request_mode(iot_request_e mode);

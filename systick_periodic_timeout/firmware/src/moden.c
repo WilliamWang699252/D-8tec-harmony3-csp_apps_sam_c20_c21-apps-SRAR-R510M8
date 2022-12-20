@@ -9,7 +9,7 @@
 #include "appuart.h"
 #include "app_uart_debug.h"
 
-#define AT_MODULE_CONNECT_TIMEOUT_MS                          5000  //5sec
+#define AT_MODULE_CONNECT_TIMEOUT_MS                          10000  //5sec
 #define AT_4GLTE_link_chk_TIMEOUT_MS                          5000  //5sec
 #define AT_NETWORK_STATUS_TIMEOUT_MS                          5000  //5sec
 #define AT_RELOG_IN_TIMEOUT_MS                                5000  //5SEC
@@ -17,7 +17,7 @@
 #define AT_MQTT_NO_AUTH_USERID_LOGIN_PARA_LOAD_TIMEOUT_MS     5000  //5SEC   
 #define AT_MQTT_PARA_OPERATION_TIMEOUT_MS                     5000  //5SEC
 #define AT_4G_LTE_LOGIN_TIMEOUT_MS                            5000  //5SEC
-#define AT_MQTT_BIDIR_AUTH_LOGIN_FLOW_TIMEOUT_MS              10000 //10SEC
+#define AT_MQTT_BIDIR_AUTH_LOGIN_FLOW_TIMEOUT_MS              20000 //10SEC
 #define AT_GPS_TIMEOUT_MS                                     5000  //5SEC
 #define AT_MQTT_TX_UP_DATA1_TIMEOUT_MS                        10000 //10SEC
 #define AT_READ_TIMEOUT_MS                                    10000 //10SEC
@@ -42,6 +42,7 @@ void init_moden(void){
     setmcahinestates(disconnect);
     setmoden (moden_open);
     setldoon();
+    SYSTICK_DelayMs(1000);
     resetiot();
     
     _moden_cmd_data.state = COMMAND_NONE;
@@ -55,7 +56,10 @@ void init_moden(void){
     memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
     _moden.lte_4G_RX_flag = 0;
     _moden.lte_4G_RX_count = 0;
-    _moden.lte_4G_RX_DOWN_PUB_flag = 0;
+    //_moden.lte_4G_RX_DOWN_PUB_flag = 0;
+    memset(_moden.lte_4G_RX_DOWN_PUB_flag,0,sizeof(_moden.lte_4G_RX_DOWN_PUB_flag));
+    _moden.lte_4G_RX_index1 = 0;
+    _moden.lte_4G_RX_index2 = 0;
     memset(_moden.lte_4G_RX_data,0,sizeof(_moden.lte_4G_RX_data));
     _moden.lte_4G_TX_error_count = 0;
     _moden.lte_4G_RX_error_count = 0;
@@ -188,7 +192,7 @@ void moden_main(void){
                             _moden.AT_state = _AT_UGRMC1_CMD;
                         }
                         else
-                            _moden.AT_state = _AT_UGRMC2_CMD;
+                            _moden.AT_state = _AT_CCLK2_CMD;//_AT_UGRMC2_CMD;
                     }                   
                 }
                 break;
@@ -464,10 +468,10 @@ void SendATCOmmand(void){
                 uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
             #endif
             break;
-        case  _AT_CCLK_CMD:
+        case  _AT_CCLK1_CMD:
             sprintf(buffer,"AT+CCLK?\r\n");
             SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));
-            at_4GLTE_link_chk_state_bak = _AT_CCLK_CMD;
+            at_4GLTE_link_chk_state_bak = _AT_CCLK1_CMD;
             _moden.AT_state = _AT_4GLTE_link_chk_SENDING;
             //_moden_cmd_data.state = COMMAND_SENDING;
             at_4GLTE_link_chk_tick = timer1ms;
@@ -528,7 +532,7 @@ void SendATCOmmand(void){
             
             memset(platformrxbuffer,0,sizeof(platformrxbuffer));
             
-            if(at_4GLTE_link_chk_state_bak != _AT_CCLK_CMD)
+            if(at_4GLTE_link_chk_state_bak != _AT_CCLK1_CMD)
                 _moden.AT_state = at_4GLTE_link_chk_state_bak+1;
             else
                 _moden.AT_state = _AT_4GLTE_link_chk_FINISH;
@@ -1959,6 +1963,31 @@ void SendATCOmmand(void){
                 uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
             #endif
             break;
+        case _AT_UTIME1_CMD:
+            sprintf(buffer,"AT+UTIME=1,2\r\n");
+            SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));
+            at_GPS_state_bak = _AT_UTIME1_CMD;
+            _moden.AT_state = _AT_GPS_SENDING;
+            //_moden_cmd_data.state = COMMAND_SENDING;
+            at_GPS_tick = timer1ms;       
+            
+            #ifdef AT_UART_DEBUG_ON
+                uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
+            #endif
+            break;    
+        case _AT_CCLK2_CMD:
+            sprintf(buffer,"AT+CCLK?\r\n");
+            SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));
+            at_GPS_state_bak = _AT_CCLK2_CMD;
+            _moden.AT_state = _AT_GPS_SENDING;
+            //_moden_cmd_data.state = COMMAND_SENDING;
+            at_GPS_tick = timer1ms;       
+            
+            #ifdef AT_UART_DEBUG_ON
+                uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
+            #endif              
+                
+            break;            
         case _AT_UGRMC2_CMD:
             sprintf(buffer,"AT+UGRMC?\r\n");
             SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));
@@ -1978,6 +2007,30 @@ void SendATCOmmand(void){
                 memcpy(platformrxbuffer,rxBuffer,strlen((const char *)rxBuffer));
                 memset(rxBuffer,0,sizeof(rxBuffer));     
                 nBytesRead = 0;
+                
+                {
+                    char *adr;
+                    
+                    adr = strstr((char *)platformrxbuffer,"+CCLK: \"");
+                    
+                    if(adr != 0){
+                    
+                        adr += 8;                        
+                         _moden.year = atoi(adr);
+                         adr += 3;
+                         _moden.month = atoi(adr);
+                        adr += 3;
+                         _moden.date = atoi(adr);
+                        adr += 3;
+                        _moden.hour = atoi(adr);
+                        adr += 3;
+                        _moden.minute = atoi(adr);
+                        adr += 3;
+                        _moden.second = atoi(adr);  
+                        
+                        _moden.utc_number =  (_moden.hour*60*60) +  (_moden.minute*60) +  (_moden.second);
+                    }
+                }
             }
             else if(strstr((const char *)rxBuffer,(const char *)"ERROR\r\n") != 0){
                 _moden_cmd_data.state = COMMAND_ERROR;
@@ -2026,7 +2079,7 @@ void SendATCOmmand(void){
                 char *adr;
                 float latitude,longitude,tmp_float;
                 int32_t tmp1_int32; 
-                
+                /*
                 adr = strstr((char *)platformrxbuffer,"$GNRMC,");
                 adr += 7;
                 if(*adr != ','){
@@ -2056,7 +2109,7 @@ void SendATCOmmand(void){
                     tmp_32_1 = tmp_32_1 /100;
                     _moden.date = tmp_32_1 % 100;
                 }
-                
+                */
                 
                 adr = strstr((char *)platformrxbuffer,",A,");
                 if(adr != 0){
@@ -2394,15 +2447,20 @@ void SendATCOmmand(void){
                     if((adr1 != 0) || (adr2 != 0)){
                         
                         if(adr1 != 0)
-                            _moden.lte_4G_RX_DOWN_PUB_flag = 1;
+                            _moden.lte_4G_RX_DOWN_PUB_flag[_moden.lte_4G_RX_index1] = 1;
                         
                         if(adr2 != 0)
-                            _moden.lte_4G_RX_DOWN_PUB_flag = 2;
+                            _moden.lte_4G_RX_DOWN_PUB_flag[_moden.lte_4G_RX_index1] = 2;
                         
                         adr1 = strstr((char *)platformrxbuffer,(char *)",\"{");
                         adr1 += strlen(",\"{");
                         adr2 = strstr((char *)platformrxbuffer,(char *)"}\"\r\n");
-                        memcpy(_moden.lte_4G_RX_data,adr1,adr2-adr1);
+                        memcpy(_moden.lte_4G_RX_data[_moden.lte_4G_RX_index1],adr1,adr2-adr1);
+                        
+                        _moden.lte_4G_RX_index1++;
+                        if(_moden.lte_4G_RX_index1 >= LTE_4G_RX_DATA_COUNT)
+                            _moden.lte_4G_RX_index1 = 0;
+                        
                         _moden.lte_4G_RX_flag = 1;
                         _moden.lte_4G_RX_error_count = 0;
                     }
@@ -2411,9 +2469,16 @@ void SendATCOmmand(void){
                 #ifdef AT_UART_DEBUG_ON
                     {
                         char rx_data_tmp[512];
-                                        
+                        uint8_t tmp_8;
+                        
                         sprintf(rx_data_tmp,"RX DATA:");
-                        strcat(rx_data_tmp,(const char *)_moden.lte_4G_RX_data);
+                        
+                        if(_moden.lte_4G_RX_index1 == 0)
+                            tmp_8 = LTE_4G_RX_DATA_COUNT - 1;
+                        else 
+                            tmp_8 = _moden.lte_4G_RX_index1 - 1;
+                                                
+                        strcat(rx_data_tmp,(const char *)_moden.lte_4G_RX_data[tmp_8]);
                         strcat(rx_data_tmp,"\r\n");
                         uart_debug_megssage((uint8_t*)rx_data_tmp, strlen((char *)rx_data_tmp));
                     }

@@ -30,8 +30,8 @@ extern "C" {
 #define _AT_MODULE_CONNECT_FINISH                       (0x01FF)  
 #define _AT2_CMD                                        (0x0200) 
 #define _AT_CEREG1_CMD                                  (0x0201) 
-#define _AT_CGDCONT1_CMD                                 (0x0202)
-#define _AT_CCLK_CMD                                    (0x0203)
+#define _AT_CGDCONT1_CMD                                (0x0202)
+#define _AT_CCLK1_CMD                                    (0x0203)
 #define _AT_4GLTE_link_chk_SENDING                      (0x02FC)
 #define _AT_4GLTE_link_chk_OK                           (0x02FD)
 #define _AT_4GLTE_link_chk_ERROR                        (0x02FE)
@@ -134,7 +134,9 @@ extern "C" {
 #define _AT_UGRMC1_CMD                                  (0x0B00)
 #define _AT_UGIND_CMD                                   (0x0B01)
 #define _AT_UGPS1_CMD                                   (0x0B02)
-#define _AT_UGRMC2_CMD                                  (0x0B03)
+#define _AT_UTIME1_CMD                                  (0x0B03)
+#define _AT_CCLK2_CMD                                   (0x0B04)
+#define _AT_UGRMC2_CMD                                  (0x0B05)
 #define _AT_GPS_SENDING                                 (0x0BFC)
 #define _AT_GPS_OK                                      (0x0BFD)
 #define _AT_GPS_ERROR                                   (0x0BFE)
@@ -152,6 +154,8 @@ extern "C" {
 #define _AT_READ_OK                                     (0x80FD)
 #define _AT_READ_ERROR                                  (0x80FE)
 #define _AT_READ_FINISH                                 (0x80FF)  
+    
+#define LTE_4G_RX_DATA_COUNT 5
    
 typedef enum
 {
@@ -184,8 +188,10 @@ typedef struct MODEN_DATA
    uint8_t lte_4G_TX_data[UART_TX_RX_SIZE];
    uint8_t lte_4G_RX_flag;
    uint16_t lte_4G_RX_count;
-   uint8_t lte_4G_RX_DOWN_PUB_flag;  // 1:DOWN 2:PUB
-   uint8_t lte_4G_RX_data[UART_TX_RX_SIZE];
+   uint8_t lte_4G_RX_DOWN_PUB_flag[LTE_4G_RX_DATA_COUNT];  // 1:DOWN 2:PUB
+   uint8_t lte_4G_RX_index1;
+   uint8_t lte_4G_RX_index2;
+   uint8_t lte_4G_RX_data[LTE_4G_RX_DATA_COUNT][UART_TX_RX_SIZE];
    uint8_t lte_4G_TX_error_count;
    uint8_t lte_4G_RX_error_count;
    uint8_t lte_4G_reset_initial_flag;
@@ -202,7 +208,8 @@ typedef struct MODEN_DATA
    uint8_t  date;
    uint8_t  hour;
    uint8_t  minute;
-   uint8_t  second;
+   uint8_t  second;   
+   uint32_t utc_number;
    
 } MODEN_DATA;
 
