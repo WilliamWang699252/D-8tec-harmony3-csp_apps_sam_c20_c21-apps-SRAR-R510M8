@@ -149,65 +149,40 @@ void iot_main(void){
         
         {
             char * adr;
-            uint32_t tmp_32;
-            
+                        
             adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"\"STIME\":\"");
             
             adr += 11;
-            _iotdata.year = atoi(adr);
+            _iotdata.rtc_time.year = atoi(adr);
             adr += 3;
-            _iotdata.month = atoi(adr);
+            _iotdata.rtc_time.month = atoi(adr);
             adr += 3;
-            _iotdata.date = atoi(adr);
+            _iotdata.rtc_time.date = atoi(adr);
             adr += 3;
-            _iotdata.hour = atoi(adr);
+            _iotdata.rtc_time.hour = atoi(adr);
             adr += 3;
-            _iotdata.minute = atoi(adr);
+            _iotdata.rtc_time.minute = atoi(adr);
             adr += 3;
-            _iotdata.second = atoi(adr);  
+            _iotdata.rtc_time.second = atoi(adr);  
                         
-            _iotdata.utc_number =  (_iotdata.hour*60*60) +  (_iotdata.minute*60) +  (_iotdata.second); 
+            _iotdata.rtc_time.utc_number =  Drv_RTC_Read(&_iotdata.rtc_time);             
             
-            
-            
-            if(_iotdata.utc_number>= _moden.utc_number){
-                
-                if((_iotdata.utc_number - _moden.utc_number) <= IOT_TIMEOUT_SEC){
-                    
-                }
-                else if((_iotdata.utc_number>((24*60*60)-(IOT_TIMEOUT_SEC))) && (_moden.utc_number < (IOT_TIMEOUT_SEC))){
-                    tmp_32 = _moden.utc_number + (24*60*60);
-                    
-                    if((tmp_32 - _iotdata.utc_number) > (5*60))
-                        send_timeout_flag = 1;
-                }
-                else{
-                    send_timeout_flag = 1;
-                }
-                
-            }else if(_moden.utc_number > _iotdata.utc_number){
-            
-                if((_moden.utc_number - _iotdata.utc_number) <= IOT_TIMEOUT_SEC){
-                    
-                }
-                else if((_moden.utc_number>((24*60*60)-(IOT_TIMEOUT_SEC))) && (_iotdata.utc_number < (IOT_TIMEOUT_SEC))){
-                    tmp_32 = _iotdata.utc_number + (24*60*60);
-                    
-                    if((tmp_32 - _moden.utc_number) > (5*60))
-                        send_timeout_flag = 1;
-                }
-                else{
-                    send_timeout_flag = 1;
-                }                
-            }         
+            if(_iotdata.rtc_time.utc_number >= _moden.rtc_time.utc_number){                
+                if((_iotdata.rtc_time.utc_number - _moden.rtc_time.utc_number) > (IOT_TIMEOUT_SEC))
+                    send_timeout_flag = 1;                
+            }
+            else{
+                if((_moden.rtc_time.utc_number - _iotdata.rtc_time.utc_number) > (IOT_TIMEOUT_SEC))
+                    send_timeout_flag = 1;            
+            }
             
             #ifdef AT_IOT_DEBONG_ON
                 {
                     char string[512];
                     sprintf(string,"year:%d,month:%d,date:%d,hour:%d,minute:%d,second:%d,UTC1:%d,UTC2:%d\r\n",
-                            _iotdata.year,_iotdata.month,_iotdata.date,
-                            _iotdata.hour,_iotdata.minute,_iotdata.second,
-                            (int)_iotdata.utc_number,(int)_moden.utc_number);
+                            _iotdata.rtc_time.year,_iotdata.rtc_time.month,_iotdata.rtc_time.date,
+                            _iotdata.rtc_time.hour,_iotdata.rtc_time.minute,_iotdata.rtc_time.second,
+                            (int)_iotdata.rtc_time.utc_number,(int)_moden.rtc_time.utc_number);
                     uart_debug_megssage((uint8_t*)string, strlen(string));  
                     sprintf(string,"send_timeout_flag:%d\r\n",send_timeout_flag);
                     uart_debug_megssage((uint8_t*)string, strlen(string));  
@@ -469,7 +444,7 @@ void iot_data_pack(uint8_t pack_num){
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PCBUUID':'%s',",_moden.moden_uuid_md5); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
-                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+                    _moden.rtc_time.year+2000,_moden.rtc_time.month,_moden.rtc_time.date,_moden.rtc_time.hour,_moden.rtc_time.minute,_moden.rtc_time.second); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD': 'DEVPING',"); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
@@ -522,7 +497,7 @@ void iot_data_pack(uint8_t pack_num){
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
-                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+                    _moden.rtc_time.year+2000,_moden.rtc_time.month,_moden.rtc_time.date,_moden.rtc_time.hour,_moden.rtc_time.minute,_moden.rtc_time.second); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LINKCMD': 'DEVCHKLIST',"); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
@@ -559,7 +534,7 @@ void iot_data_pack(uint8_t pack_num){
             }
             
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
-                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+                    _moden.rtc_time.year+2000,_moden.rtc_time.month,_moden.rtc_time.date,_moden.rtc_time.hour,_moden.rtc_time.minute,_moden.rtc_time.second); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             
             if(_iotdata.unlock_OK == 1) //OK
@@ -595,7 +570,7 @@ void iot_data_pack(uint8_t pack_num){
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
-                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+                    _moden.rtc_time.year+2000,_moden.rtc_time.month,_moden.rtc_time.date,_moden.rtc_time.hour,_moden.rtc_time.minute,_moden.rtc_time.second); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             
             if(_iotdata.lock_OK == 1) //OK
@@ -631,7 +606,7 @@ void iot_data_pack(uint8_t pack_num){
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
-                    _moden.year+2000,_moden.month,_moden.date,_moden.hour,_moden.minute,_moden.second); 
+                    _moden.rtc_time.year+2000,_moden.rtc_time.month,_moden.rtc_time.date,_moden.rtc_time.hour,_moden.rtc_time.minute,_moden.rtc_time.second); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             
             if(_iotdata.dev_open_box_OK == 1) //OK
@@ -665,4 +640,67 @@ void iot_data_pack(uint8_t pack_num){
             
             break;
     }   
+}
+
+/*===========================================================================+
+|        ?????RTC?   ????2018?1?1?0?RTC???0??????     |
+|        ?????2080?                                                    |
++===========================================================================*/
+uint32_t Drv_RTC_Read(UTC_TIME *rtc_time_tmp){
+										  // 1  2  3  4  5  6  7  8  9  10  11? 
+	uint8_t month_day[11]={31,28,31,30,31,30,31,31,30,31,30},tmp;
+	uint32_t rtc_value;
+	uint16_t year;
+	uint8_t month,day,hour,minute,second;
+	uint32_t rtc_tmp=0;	
+
+	year = rtc_time_tmp->year;
+	month = rtc_time_tmp->month;
+	day = rtc_time_tmp->date;
+	hour = rtc_time_tmp->hour;
+	minute = rtc_time_tmp->minute;
+	second = rtc_time_tmp->second;
+
+	rtc_value = ((year - 2018) * 31536000);  //????
+	
+	for(tmp=0;tmp<month-1;tmp++){		//??????
+		rtc_tmp += month_day[tmp];
+	}
+	rtc_tmp = rtc_tmp*24*60*60;     //??????
+	
+	rtc_value += rtc_tmp;
+	
+	rtc_value += ((day-1)*24*60*60);  //??????
+	
+	rtc_value += ((hour*60*60) + (minute*60) + (second));
+
+	//2?29??? //2020?2??29?
+	if(year>=2020){
+		rtc_tmp = 0;
+		rtc_tmp = (((year-2020)/4)+1);
+		
+		if((month<3) &&
+			 ((year==2020) || (year==2024) || (year==2028) ||//??3????
+		    (year==2032) || (year==2036) || (year==2040) ||
+				(year==2044) || (year==2048) || (year==2052) ||
+				(year==2056) || (year==2060) || (year==2064) ||
+				(year==2068) || (year==2072) || (year==2076))){               
+		
+			rtc_tmp--;
+		}
+		/*
+		if(((year==2020)&&(month<3)) || ((year==2024)&&(month<3)) || ((year==2028)&&(month<3)) ||//??2????
+		   ((year==2032)&&(month<3)) || ((year==2036)&&(month<3))	|| ((year==2040)&&(month<3)) ||
+				(year==2044)&&(month<3)) || ((year==2048)&&(month<3))	|| ((year==2052)&&(month<3)) ||
+				(year==2056)&&(month<3)) || ((year==2060)&&(month<3))	|| ((year==2064)&&(month<3)) ||
+				(year==2068)&&(month<3)) || ((year==2072)&&(month<3))	|| ((year==2076)&&(month<3))){
+					
+			rtc_tmp--;
+		}	
+*/		
+		
+		rtc_value += (rtc_tmp*24*60*60);	
+	}
+	
+	return rtc_value;
 }

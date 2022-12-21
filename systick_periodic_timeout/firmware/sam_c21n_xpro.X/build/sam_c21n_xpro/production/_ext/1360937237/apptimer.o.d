@@ -125,7 +125,7 @@ build/sam_c21n_xpro/production/_ext/1360937237/apptimer.o: \
  ../src/config/sam_c21n_xpro/system/int/sys_int.h \
  ../src/config/sam_c21n_xpro/osal/osal.h \
  ../src/config/sam_c21n_xpro/system/debug/sys_debug.h ../src/app.h \
- ../src/apptimer.h ../src/appiot.h ../src/iot_msg.h \
+ ../src/apptimer.h ../src/appiot.h ../src/iot_msg.h ../src/app.h \
  ../src/config/sam_c21n_xpro/peripheral/systick/plib_systick.h \
  ../src/canapp.h \
  ../src/config/sam_c21n_xpro/peripheral/can/plib_can_common.h
@@ -389,6 +389,8 @@ build/sam_c21n_xpro/production/_ext/1360937237/apptimer.o: \
 ../src/appiot.h:
 
 ../src/iot_msg.h:
+
+../src/app.h:
 
 ../src/config/sam_c21n_xpro/peripheral/systick/plib_systick.h:
 

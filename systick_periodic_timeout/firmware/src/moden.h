@@ -203,13 +203,7 @@ typedef struct MODEN_DATA
    uint8_t  lte_4G_latitude[20];
    uint8_t  lte_4G_longitude[20];
    
-   uint8_t  year;
-   uint8_t  month;
-   uint8_t  date;
-   uint8_t  hour;
-   uint8_t  minute;
-   uint8_t  second;   
-   uint32_t utc_number;
+   UTC_TIME rtc_time;
    
 } MODEN_DATA;
 

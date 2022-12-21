@@ -59,6 +59,17 @@ extern "C" {
     #define AT_IOT_DEBONG_ON
 #endif
 
+typedef struct
+{
+    uint8_t  year;
+    uint8_t  month;
+    uint8_t  date;
+    uint8_t  hour;
+    uint8_t  minute;
+    uint8_t  second;   
+    uint32_t utc_number;   
+} UTC_TIME;
+
 extern uint8_t motor_version[5]; 
 extern uint8_t iot_version[5];
     

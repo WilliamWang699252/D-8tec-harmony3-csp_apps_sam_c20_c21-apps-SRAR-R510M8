@@ -125,8 +125,8 @@ build/sam_c21n_xpro/production/_ext/1360937237/appiot.o: ../src/appiot.c \
  ../src/config/sam_c21n_xpro/system/int/sys_int.h \
  ../src/config/sam_c21n_xpro/osal/osal.h \
  ../src/config/sam_c21n_xpro/system/debug/sys_debug.h ../src/app.h \
- ../src/apptimer.h ../src/appiot.h ../src/iot_msg.h ../src/moden.h \
- ../src/app.h ../src/canapp.h \
+ ../src/apptimer.h ../src/appiot.h ../src/iot_msg.h ../src/app.h \
+ ../src/moden.h ../src/canapp.h \
  ../src/config/sam_c21n_xpro/peripheral/can/plib_can_common.h \
  ../src/appemueeprom.h ../src/app_uart_debug.h
 
@@ -390,9 +390,9 @@ build/sam_c21n_xpro/production/_ext/1360937237/appiot.o: ../src/appiot.c \
 
 ../src/iot_msg.h:
 
-../src/moden.h:
-
 ../src/app.h:
+
+../src/moden.h:
 
 ../src/canapp.h:
 

@@ -72,12 +72,12 @@ void init_moden(void){
     memset(_moden.lte_4G_latitude,0,sizeof(_moden.lte_4G_latitude));
     memset(_moden.lte_4G_longitude,0,sizeof(_moden.lte_4G_longitude));
     
-    _moden.year = 20;
-    _moden.month = 1;
-    _moden.date = 1;
-    _moden.hour = 1;
-    _moden.minute = 1;
-    _moden.second = 1;
+    _moden.rtc_time.year = 20;
+    _moden.rtc_time.month = 1;
+    _moden.rtc_time.date = 1;
+    _moden.rtc_time.hour = 1;
+    _moden.rtc_time.minute = 1;
+    _moden.rtc_time.second = 1;
         
     memset(buffer,0,sizeof(buffer));    
     memset(rxBuffer,0,sizeof(rxBuffer)); 
@@ -2016,19 +2016,19 @@ void SendATCOmmand(void){
                     if(adr != 0){
                     
                         adr += 8;                        
-                         _moden.year = atoi(adr);
+                         _moden.rtc_time.year = atoi(adr);
                          adr += 3;
-                         _moden.month = atoi(adr);
+                         _moden.rtc_time.month = atoi(adr);
                         adr += 3;
-                         _moden.date = atoi(adr);
+                         _moden.rtc_time.date = atoi(adr);
                         adr += 3;
-                        _moden.hour = atoi(adr);
+                        _moden.rtc_time.hour = atoi(adr);
                         adr += 3;
-                        _moden.minute = atoi(adr);
+                        _moden.rtc_time.minute = atoi(adr);
                         adr += 3;
-                        _moden.second = atoi(adr);  
+                        _moden.rtc_time.second = atoi(adr);  
                         
-                        _moden.utc_number =  (_moden.hour*60*60) +  (_moden.minute*60) +  (_moden.second);
+                        _moden.rtc_time.utc_number =  Drv_RTC_Read(&_moden.rtc_time);  
                     }
                 }
             }

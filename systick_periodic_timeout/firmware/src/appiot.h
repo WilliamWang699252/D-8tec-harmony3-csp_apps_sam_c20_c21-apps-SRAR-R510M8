@@ -12,6 +12,7 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
 #include "iot_msg.h"
+#include "app.h"
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -120,6 +121,7 @@ typedef enum
 } IOT_STATES;
 
 
+
 typedef struct
 {
     /* The application's current state */
@@ -134,13 +136,7 @@ typedef struct
       uint8_t lock_OK;  //lock OK:1 FAIL:2
       uint8_t dev_open_box_OK;  //open OK:1 FAIL:2
       
-      uint8_t  year;
-      uint8_t  month;
-      uint8_t  date;
-      uint8_t  hour;
-      uint8_t  minute;
-      uint8_t  second;   
-      uint32_t utc_number;
+      UTC_TIME rtc_time;
 } IOT_DATA;
 
 typedef struct
@@ -216,6 +212,8 @@ void iot_main(void);
 void setiotstate(IOT_STATES );
 void updateiotodo(uint32_t );
 void iot_data_pack(uint8_t pack_num);
+
+uint32_t Drv_RTC_Read(UTC_TIME *rtc_time_tmp);
 
 MACHINE_STATES readmcahinestates(void);
 #ifdef	__cplusplus

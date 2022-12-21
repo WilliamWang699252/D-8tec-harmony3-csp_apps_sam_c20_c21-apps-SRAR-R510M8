@@ -125,7 +125,7 @@ build/sam_c21n_xpro/production/_ext/1360937237/appemueeprom.o: \
  ../src/config/sam_c21n_xpro/system/int/sys_int.h \
  ../src/config/sam_c21n_xpro/osal/osal.h \
  ../src/config/sam_c21n_xpro/system/debug/sys_debug.h ../src/app.h \
- ../src/appemueeprom.h ../src/appiot.h ../src/iot_msg.h \
+ ../src/appemueeprom.h ../src/appiot.h ../src/iot_msg.h ../src/app.h \
  ../src/config/sam_c21n_xpro/library/emulated_eeprom/emulated_eeprom.h
 
 ../src/config/sam_c21n_xpro/definitions.h:
@@ -387,5 +387,7 @@ build/sam_c21n_xpro/production/_ext/1360937237/appemueeprom.o: \
 ../src/appiot.h:
 
 ../src/iot_msg.h:
+
+../src/app.h:
 
 ../src/config/sam_c21n_xpro/library/emulated_eeprom/emulated_eeprom.h:
