@@ -1,6 +1,7 @@
 build/sam_c21n_xpro/production/_ext/1360937237/moden.o: ../src/moden.c \
- ../src/moden.h ../src/app.h ../src/config/sam_c21n_xpro/configuration.h \
- ../src/config/sam_c21n_xpro/user.h ../src/config/sam_c21n_xpro/device.h \
+ ../src/config/sam_c21n_xpro/definitions.h \
+ ../src/config/sam_c21n_xpro/peripheral/nvmctrl/plib_nvmctrl.h \
+ ../src/config/sam_c21n_xpro/device.h \
  ../src/packs/ATSAMC21E18A_DFP/samc21e18a.h \
  ../src/packs/CMSIS/CMSIS/Core/Include/core_cm0plus.h \
  ../src/packs/CMSIS/CMSIS/Core/Include/cmsis_version.h \
@@ -83,11 +84,9 @@ build/sam_c21n_xpro/production/_ext/1360937237/moden.o: ../src/moden.c \
  ../src/packs/ATSAMC21E18A_DFP/instance/wdt.h \
  ../src/packs/ATSAMC21E18A_DFP/pio/samc21e18a.h \
  ../src/config/sam_c21n_xpro/device_cache.h \
- ../src/config/sam_c21n_xpro/toolchain_specifics.h \
- ../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h ../src/appiot.h \
- ../src/config/sam_c21n_xpro/definitions.h \
- ../src/config/sam_c21n_xpro/peripheral/nvmctrl/plib_nvmctrl.h \
  ../src/config/sam_c21n_xpro/device.h \
+ ../src/config/sam_c21n_xpro/toolchain_specifics.h \
+ ../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h \
  ../src/config/sam_c21n_xpro/peripheral/sercom/i2c_master/plib_sercom2_i2c_master.h \
  ../src/config/sam_c21n_xpro/peripheral/sercom/i2c_master/plib_sercom_i2c_master_common.h \
  ../src/config/sam_c21n_xpro/peripheral/sercom/usart/plib_sercom1_usart.h \
@@ -115,6 +114,8 @@ build/sam_c21n_xpro/production/_ext/1360937237/moden.o: ../src/moden.c \
  ../src/config/sam_c21n_xpro/driver/usart/src/drv_usart_local.h \
  ../src/config/sam_c21n_xpro/driver/usart/drv_usart.h \
  ../src/config/sam_c21n_xpro/osal/osal.h \
+ ../src/config/sam_c21n_xpro/configuration.h \
+ ../src/config/sam_c21n_xpro/user.h \
  ../src/config/sam_c21n_xpro/osal/osal_definitions.h \
  ../src/config/sam_c21n_xpro/osal/osal_impl_basic.h \
  ../src/config/sam_c21n_xpro/peripheral/adc/plib_adc0.h \
@@ -124,16 +125,12 @@ build/sam_c21n_xpro/production/_ext/1360937237/moden.o: ../src/moden.c \
  ../src/config/sam_c21n_xpro/system/int/sys_int.h \
  ../src/config/sam_c21n_xpro/osal/osal.h \
  ../src/config/sam_c21n_xpro/system/debug/sys_debug.h ../src/app.h \
- ../src/iot_msg.h ../src/apptimer.h ../src/appuart.h \
- ../src/app_uart_debug.h
+ ../src/moden.h ../src/app.h ../src/appiot.h ../src/iot_msg.h \
+ ../src/apptimer.h ../src/appuart.h ../src/app_uart_debug.h
 
-../src/moden.h:
+../src/config/sam_c21n_xpro/definitions.h:
 
-../src/app.h:
-
-../src/config/sam_c21n_xpro/configuration.h:
-
-../src/config/sam_c21n_xpro/user.h:
+../src/config/sam_c21n_xpro/peripheral/nvmctrl/plib_nvmctrl.h:
 
 ../src/config/sam_c21n_xpro/device.h:
 
@@ -301,17 +298,11 @@ build/sam_c21n_xpro/production/_ext/1360937237/moden.o: ../src/moden.c \
 
 ../src/config/sam_c21n_xpro/device_cache.h:
 
+../src/config/sam_c21n_xpro/device.h:
+
 ../src/config/sam_c21n_xpro/toolchain_specifics.h:
 
 ../src/packs/CMSIS/CMSIS/Core/Include/cmsis_compiler.h:
-
-../src/appiot.h:
-
-../src/config/sam_c21n_xpro/definitions.h:
-
-../src/config/sam_c21n_xpro/peripheral/nvmctrl/plib_nvmctrl.h:
-
-../src/config/sam_c21n_xpro/device.h:
 
 ../src/config/sam_c21n_xpro/peripheral/sercom/i2c_master/plib_sercom2_i2c_master.h:
 
@@ -367,6 +358,10 @@ build/sam_c21n_xpro/production/_ext/1360937237/moden.o: ../src/moden.c \
 
 ../src/config/sam_c21n_xpro/osal/osal.h:
 
+../src/config/sam_c21n_xpro/configuration.h:
+
+../src/config/sam_c21n_xpro/user.h:
+
 ../src/config/sam_c21n_xpro/osal/osal_definitions.h:
 
 ../src/config/sam_c21n_xpro/osal/osal_impl_basic.h:
@@ -386,6 +381,12 @@ build/sam_c21n_xpro/production/_ext/1360937237/moden.o: ../src/moden.c \
 ../src/config/sam_c21n_xpro/system/debug/sys_debug.h:
 
 ../src/app.h:
+
+../src/moden.h:
+
+../src/app.h:
+
+../src/appiot.h:
 
 ../src/iot_msg.h:
 

@@ -105,7 +105,13 @@ int main ( void )
     init_iot();
     emnueeprom_init(); 
     
-    SYSTICK_DelayMs(10000);
+    ClrWDT();
+    SYSTICK_DelayMs(3000);
+    ClrWDT();
+    SYSTICK_DelayMs(3000);
+    ClrWDT();
+    SYSTICK_DelayMs(3000);
+    ClrWDT();
 
     while ( true )
     {   
@@ -131,6 +137,17 @@ int main ( void )
         {
             adc_convertion_fun();
             SYSTICK_DelayMs(100);
+        }
+        */
+        /*
+        {
+            SYSTICK_DelayMs(100);
+            WDT_Disable();
+            SYSTICK_TimerStop();
+            __WFI();
+            SYSTICK_TimerStart();
+            WDT_Enable();
+            SYSTICK_DelayMs(100);            
         }
         */
     /* Execution should not come here during normal operation */

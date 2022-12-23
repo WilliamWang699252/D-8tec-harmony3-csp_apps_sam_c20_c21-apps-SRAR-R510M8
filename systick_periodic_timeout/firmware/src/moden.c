@@ -3,6 +3,7 @@
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include <stdio.h>
 #include <string.h>
+#include "definitions.h"                // SYS function prototypes
 #include "moden.h"
 #include "appiot.h"
 #include "apptimer.h"
@@ -1775,7 +1776,12 @@ void SendATCOmmand(void){
                 uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
             #endif
 
-            SYSTICK_DelayMs(5000); //do not remove this is nesessary
+            //SYSTICK_DelayMs(5000); //do not remove this is nesessary
+            WDT_Clear();
+            SYSTICK_DelayMs(3000); //do not remove this is nesessary    
+            WDT_Clear();
+            SYSTICK_DelayMs(2000); //do not remove this is nesessary   
+            WDT_Clear();
             break;
             
         case _AT_CERTIFY_DOWN_CMD:
@@ -1800,8 +1806,9 @@ void SendATCOmmand(void){
             #ifdef AT_UART_DEBUG_ON
                 uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
             #endif
-            
-            SYSTICK_DelayMs(3000); //do not remove this is nesessary
+            WDT_Clear();
+            SYSTICK_DelayMs(3000); //do not remove this is 
+            WDT_Clear();
             break;
         case _AT_CERTIFY_PUB_CMD:
             {
@@ -1827,8 +1834,9 @@ void SendATCOmmand(void){
             #ifdef AT_UART_DEBUG_ON
                 uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
             #endif
-            
+            WDT_Clear();
             SYSTICK_DelayMs(3000); //do not remove this is nesessary
+            WDT_Clear();
             break;
         case _AT_UMQTTC4_CMD:
             sprintf(buffer,"AT+UMQTTC=0\r\n");
@@ -2455,6 +2463,7 @@ void SendATCOmmand(void){
                         adr1 = strstr((char *)platformrxbuffer,(char *)",\"{");
                         adr1 += strlen(",\"{");
                         adr2 = strstr((char *)platformrxbuffer,(char *)"}\"\r\n");
+                        memset(_moden.lte_4G_RX_data[_moden.lte_4G_RX_index1],0,sizeof(_moden.lte_4G_RX_data[_moden.lte_4G_RX_index1]));
                         memcpy(_moden.lte_4G_RX_data[_moden.lte_4G_RX_index1],adr1,adr2-adr1);
                         
                         _moden.lte_4G_RX_index1++;

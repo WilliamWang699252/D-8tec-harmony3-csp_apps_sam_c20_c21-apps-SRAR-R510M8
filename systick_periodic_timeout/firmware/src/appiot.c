@@ -59,8 +59,24 @@ void init_iot(void){
 	
 //	iot.uuid_len = init->uuid_len;
 //	iot.mode = init->mode;
-
+    
     _iotdata.state = IOT_NORMAL;//IOT_SLEEP;
+    memset(_iotdata.UUID,0,sizeof(_iotdata.UUID));
+    memset(_iotdata.PCBUUID,0,sizeof(_iotdata.PCBUUID));
+    _iotdata.device_status = 1;
+    _iotdata.lock_status = 0;
+    _iotdata.BKPOW_status = 0;
+    _iotdata.unlock_OK = 0;
+    _iotdata.lock_OK = 0;
+    _iotdata.dev_open_box_OK = 0;
+    
+    _iotdata.rtc_time.year = 20;
+    _iotdata.rtc_time.month = 1;
+    _iotdata.rtc_time.date = 1;
+    _iotdata.rtc_time.hour = 1;
+    _iotdata.rtc_time.minute = 1;
+    _iotdata.rtc_time.second = 1;
+    
     mqtttime=0;
     //readiotdata();
     //_iotram.odo=readOdoFromRam();
@@ -630,7 +646,7 @@ void iot_data_pack(uint8_t pack_num){
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"}}\"\r\n"); 
             
             break;
-        case 5:
+        case 5: 
             
             break;
         case 6:
@@ -654,7 +670,7 @@ uint32_t Drv_RTC_Read(UTC_TIME *rtc_time_tmp){
 	uint8_t month,day,hour,minute,second;
 	uint32_t rtc_tmp=0;	
 
-	year = rtc_time_tmp->year;
+	year = rtc_time_tmp->year + 2000;
 	month = rtc_time_tmp->month;
 	day = rtc_time_tmp->date;
 	hour = rtc_time_tmp->hour;
