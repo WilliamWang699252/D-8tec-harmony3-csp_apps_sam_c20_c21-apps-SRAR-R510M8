@@ -246,10 +246,12 @@ void iot_main(void){
             if(_moden.lte_4G_RX_DOWN_PUB_flag[_moden.lte_4G_RX_index2] == 1)
                 adr = strstr(_iotdata.PCBUUID,(char *)_moden.moden_uuid_md5);
             
-            uart_debug_megssage((uint8_t*)_iotdata.PCBUUID, strlen(_iotdata.PCBUUID));
-            uart_debug_megssage((uint8_t*)"\r\n", 2);
-            uart_debug_megssage((uint8_t*)_moden.moden_uuid_md5, strlen((char *)_moden.moden_uuid_md5));
-            uart_debug_megssage((uint8_t*)"\r\n", 2);
+            #ifdef AT_IOT_DEBONG_ON
+                uart_debug_megssage((uint8_t*)_iotdata.PCBUUID, strlen(_iotdata.PCBUUID));
+                uart_debug_megssage((uint8_t*)"\r\n", 2);
+                uart_debug_megssage((uint8_t*)_moden.moden_uuid_md5, strlen((char *)_moden.moden_uuid_md5));
+                uart_debug_megssage((uint8_t*)"\r\n", 2);
+            #endif
                 
             if(((adr != 0) && (_moden.lte_4G_RX_DOWN_PUB_flag[_moden.lte_4G_RX_index2] == 1)) || (_moden.lte_4G_RX_DOWN_PUB_flag[_moden.lte_4G_RX_index2] == 2)){
                 
@@ -470,12 +472,12 @@ void iot_data_pack(uint8_t pack_num){
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'IOTVER': '%s',",iot_version);
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'DEVSTU': '00',");
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'DEVSTU': '%d',",_iotdata.device_status);
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LOCKSTU': '00',");
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'LOCKSTU': '%d',",_iotdata.lock_status);
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BKPOW': 5,");
-            lens = strlen((char *)_moden.lte_4G_TX_data);
+            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'BKPOW': '%d',",_iotdata.BKPOW_status);
+            lens = strlen((char *)_moden.lte_4G_TX_data);  
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'GPSPOS': '%s,%s',",_moden.lte_4G_longitude,_moden.lte_4G_latitude);
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)" 'MOTOECU':{");
@@ -670,7 +672,7 @@ uint32_t Drv_RTC_Read(UTC_TIME *rtc_time_tmp){
 	uint8_t month,day,hour,minute,second;
 	uint32_t rtc_tmp=0;	
 
-	year = rtc_time_tmp->year + 2000;
+	year =(uint16_t) (rtc_time_tmp->year + 2000);
 	month = rtc_time_tmp->month;
 	day = rtc_time_tmp->date;
 	hour = rtc_time_tmp->hour;

@@ -93,18 +93,21 @@ void init_moden(void){
 
 void setldoon(void){
      EN_3V8_Set();//turn LDO ON
+     //PWR_IOT_Clear();
 }
 
 void setldoff(void){
      EN_3V8_Clear();//turn LDO off
+     //PWR_IOT_Set();
 }
 
 void resetiot(void){
     RST_IOT_Clear();  
     SYSTICK_DelayMs(10);
     RST_IOT_Set() ;
-    SYSTICK_DelayMs(100);
+    SYSTICK_DelayMs(200);
     RST_IOT_Clear();  
+    SYSTICK_DelayMs(100);
 }
 void moden_main(void){
     if(readmodenstatue()== moden_closed) return;
@@ -525,7 +528,7 @@ void SendATCOmmand(void){
                 memset(platformrxbuffer,0,sizeof(platformrxbuffer));
             }                
             break;            
-        case _AT_4GLTE_link_chk_OK:           
+        case _AT_4GLTE_link_chk_OK:
             
             #ifdef AT_UART_DEBUG_ON
                 uart_debug_megssage((uint8_t*)platformrxbuffer, strlen((char *)platformrxbuffer));
@@ -751,7 +754,7 @@ void SendATCOmmand(void){
             at_RELOG_IN_state_bak = _AT_UPSD1_CMD;
             _moden.AT_state = _AT_RELOG_IN_SENDING;
             //_moden_cmd_data.state = COMMAND_SENDING;
-            at_RELOG_IN_tick = timer1ms;       
+            at_RELOG_IN_tick = timer1ms;
             
              #ifdef AT_UART_DEBUG_ON
                 uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
@@ -928,7 +931,7 @@ void SendATCOmmand(void){
             #endif
             break;     
         case _AT_UMQTT1_CMD:
-            sprintf(buffer,"AT+UMQTT=0,\"9C490D32BB20833601820E1A7298CE22\"\r\n");
+            sprintf(buffer,"AT+UMQTT=0,\"%s\"\r\n",_moden.moden_uuid_md5);
             SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));
             at_MQTT_BIDIR_AUTH_PARA_LOAD_state_bak = _AT_UMQTT1_CMD;
             _moden.AT_state = _AT_MQTT_BIDIR_AUTH_PARA_LOAD_SENDING;
@@ -1163,7 +1166,7 @@ void SendATCOmmand(void){
         ////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////
         case _AT_UMQTT10_CMD:
-            sprintf(buffer,"AT+UMQTT=0,\"9C490D32BB20833601820E1A7298CE22\"\r\n");
+            sprintf(buffer,"AT+UMQTT=0,\"%s\"\r\n",_moden.moden_uuid_md5);
             SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));   
             _moden.AT_state++;
             

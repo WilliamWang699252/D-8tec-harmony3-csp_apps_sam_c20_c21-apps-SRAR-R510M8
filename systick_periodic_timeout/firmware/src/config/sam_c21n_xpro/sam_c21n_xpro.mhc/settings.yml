@@ -5,7 +5,7 @@ frameworkPath: ../../../..
 processor: ATSAMC21E18A
 projectName: ''
 settings:
-  PackageFilter: bootloader;bootloader_apps_ATSAMC21E18A_uart;bootloader_apps_can;bootloader_apps_uart;bootloader_apps_uart_test1;bsp;core;core_apps_sam_c20_c21;crypto;csp;csp_apps_sam_c20_c21;dev_packs;gfx;gfx_apps_sam_c20_c21;harmony-services;net;quick_docs;touch;usb
+  PackageFilter: bootloader;bootloader_apps_can;bootloader_apps_uart;bootloader_apps_uart_test1;bsp;core;core_apps_sam_c20_c21;crypto;csp;csp_apps_sam_c20_c21;dev_packs;gfx;gfx_apps_sam_c20_c21;harmony-services;net;quick_docs;touch;usb
   FORCE_OPTIMIZATION: 'false'
   GENERATE_BACKUP: 'true'
   CMSISPath: .\dev_packs\arm\CMSIS\5.8.0

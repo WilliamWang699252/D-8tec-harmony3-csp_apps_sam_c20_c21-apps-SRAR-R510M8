@@ -150,6 +150,18 @@ int main ( void )
             SYSTICK_DelayMs(100);            
         }
         */
+        /*
+        {
+            static uint32_t reset_tick_0=0;
+            
+            if((timer1ms - reset_tick_0) > 30000){
+                _moden.AT_state = 0x1000;
+                _moden.AT_READ_state = 0x1000;
+                _moden.lte_4G_TX_error_count = 1;
+                reset_tick_0 = timer1ms;
+            }
+        }
+        */
     /* Execution should not come here during normal operation */
 
     
