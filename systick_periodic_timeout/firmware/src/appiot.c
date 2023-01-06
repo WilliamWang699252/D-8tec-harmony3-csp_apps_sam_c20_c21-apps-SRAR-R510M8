@@ -157,8 +157,8 @@ void iot_main(void){
         }
     }
     */
+    
     if(((_moden.lte_4G_RX_flag == 1) && (_moden.lte_4G_TX_flag == 0)) || ((_moden.lte_4G_RX_index1 != _moden.lte_4G_RX_index2) && ( _moden.lte_4G_TX_flag == 0))){
-        
         uint8_t send_timeout_flag=0;
         
         _moden.lte_4G_RX_flag = 0;
@@ -166,9 +166,9 @@ void iot_main(void){
         {
             char * adr;
                         
-            adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"\"STIME\":\"");
+            adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"\"STIME\": \"");
             
-            adr += 11;
+            adr += 12;
             _iotdata.rtc_time.year = atoi(adr);
             adr += 3;
             _iotdata.rtc_time.month = atoi(adr);
@@ -214,20 +214,6 @@ void iot_main(void){
                 
             char * adr;
             
-            adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"UUID\": \"");
-            if(adr){
-                adr += 8;
-            }
-                
-            if(adr == 0){
-                adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"UUID\":\"");
-                if(adr){
-                    adr += 7;
-                }
-            }
-            
-            memcpy(_iotdata.UUID,adr,sizeof(_iotdata.UUID)); 
-                
             adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"PCBUUID\": \"");
             if(adr){
                 adr += 11;
@@ -263,31 +249,35 @@ void iot_main(void){
         else if(strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"DEVLOGIN")){
                 
             _iotdata.device_status = 1;
+            
+            #ifdef AT_IOT_DEBONG_ON
+                {
+                    char string[512];
+                    
+                    sprintf(string,"_iotdata.device_status = %d\r\n", _iotdata.device_status);
+                    uart_debug_megssage((uint8_t *)string, strlen(string));               
+                }
+            #endif
         }
         //DEVLOGOUT
         else if(strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"DEVLOGOUT")){
                 
             _iotdata.device_status = 0;
+            
+            #ifdef AT_IOT_DEBONG_ON
+                {
+                    char string[512];
+                    
+                    sprintf(string,"_iotdata.device_status = %d\r\n", _iotdata.device_status);
+                    uart_debug_megssage((uint8_t *)string, strlen(string));               
+                }
+            #endif
         }
         //DEVUNLOCK
         else if(strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"DEVUNLOCK")){
                 
             char * adr;
             
-            adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"UUID\": \"");
-            if(adr){
-                adr += 8;
-            }
-                
-            if(adr == 0){
-                adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"UUID\":\"");
-                if(adr){
-                    adr += 7;
-                }
-            }
-            
-            memcpy(_iotdata.UUID,adr,sizeof(_iotdata.UUID)); 
-                
             adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"PCBUUID\": \"");
             if(adr){
                 adr += 11;
@@ -301,6 +291,15 @@ void iot_main(void){
             }
                 
             memcpy(_iotdata.PCBUUID,adr,sizeof(_iotdata.PCBUUID)); 
+            
+            #ifdef AT_IOT_DEBONG_ON
+                {
+                    char string[512];
+                    
+                    sprintf(string,"IOT DEVUNLOCK\r\n");
+                    uart_debug_megssage((uint8_t *)string, strlen(string));               
+                }
+            #endif
             
             //DOWN
             if(_moden.lte_4G_RX_DOWN_PUB_flag[_moden.lte_4G_RX_index2] == 1)
@@ -317,20 +316,6 @@ void iot_main(void){
             
             char * adr;
             
-            adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"UUID\": \"");
-            if(adr){
-                adr += 8;
-            }
-                
-            if(adr == 0){
-                adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"UUID\":\"");
-                if(adr){
-                    adr += 7;
-                }
-            }
-            
-            memcpy(_iotdata.UUID,adr,sizeof(_iotdata.UUID)); 
-                
             adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"PCBUUID\": \"");
             if(adr){
                 adr += 11;
@@ -343,7 +328,16 @@ void iot_main(void){
                 }
             }
                 
-            memcpy(_iotdata.PCBUUID,adr,sizeof(_iotdata.PCBUUID));  
+            memcpy(_iotdata.PCBUUID,adr,sizeof(_iotdata.PCBUUID)); 
+            
+            #ifdef AT_IOT_DEBONG_ON
+                {
+                    char string[512];
+                    
+                    sprintf(string,"IOT DEVLOCK\r\n");
+                    uart_debug_megssage((uint8_t *)string, strlen(string));               
+                }
+            #endif
             
             //DOWN
             if(_moden.lte_4G_RX_DOWN_PUB_flag[_moden.lte_4G_RX_index2] == 1)
@@ -359,20 +353,6 @@ void iot_main(void){
                 
             char * adr;
             
-            adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"UUID\": \"");
-            if(adr){
-                adr += 8;
-            }
-                
-            if(adr == 0){
-                adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"UUID\":\"");
-                if(adr){
-                    adr += 7;
-                }
-            }
-            
-            memcpy(_iotdata.UUID,adr,sizeof(_iotdata.UUID)); 
-                
             adr = strstr((char *)_moden.lte_4G_RX_data[_moden.lte_4G_RX_index2],"PCBUUID\": \"");
             if(adr){
                 adr += 11;
@@ -386,6 +366,15 @@ void iot_main(void){
             }
             
             memcpy(_iotdata.PCBUUID,adr,sizeof(_iotdata.PCBUUID));
+            
+            #ifdef AT_IOT_DEBONG_ON
+                {
+                    char string[512];
+                    
+                    sprintf(string,"IOT DEVOPENBOX\r\n");
+                    uart_debug_megssage((uint8_t *)string, strlen(string));               
+                }
+            #endif
             
             //DOWN
             if(_moden.lte_4G_RX_DOWN_PUB_flag[_moden.lte_4G_RX_index2] == 1)
@@ -451,8 +440,7 @@ void setmqttstates(MACHINE_STATES data){
 void iot_data_pack(uint8_t pack_num){
     
     uint16_t lens;
-    char char_tmp[50];
-    
+       
     switch(pack_num){
         //DEVPING
         case 0:            
@@ -508,10 +496,6 @@ void iot_data_pack(uint8_t pack_num){
             memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
             sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            memset(char_tmp,0,sizeof(char_tmp));
-            memcpy(char_tmp,_iotdata.UUID,sizeof(_iotdata.UUID));
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'UUID':'%s',",char_tmp); 
-            lens = strlen((char *)_moden.lte_4G_TX_data);            
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
@@ -541,11 +525,7 @@ void iot_data_pack(uint8_t pack_num){
             memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
             sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            memset(char_tmp,0,sizeof(char_tmp));
-            memcpy(char_tmp,_iotdata.UUID,sizeof(_iotdata.UUID));
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'UUID':'%s',",char_tmp); 
-            lens = strlen((char *)_moden.lte_4G_TX_data);            
-            
+                        
             if(_iotdata.unlock_OK == 2){ //fail
                 sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
                 lens = strlen((char *)_moden.lte_4G_TX_data);
@@ -581,10 +561,6 @@ void iot_data_pack(uint8_t pack_num){
             memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
             sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            memset(char_tmp,0,sizeof(char_tmp));
-            memcpy(char_tmp,_iotdata.UUID,sizeof(_iotdata.UUID));
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'UUID':'%s',",char_tmp); 
-            lens = strlen((char *)_moden.lte_4G_TX_data);            
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",
@@ -617,10 +593,6 @@ void iot_data_pack(uint8_t pack_num){
             memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
             sprintf((char *)_moden.lte_4G_TX_data,(const char *)"{"); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
-            memset(char_tmp,0,sizeof(char_tmp));
-            memcpy(char_tmp,_iotdata.UUID,sizeof(_iotdata.UUID));
-            sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'UUID':'%s',",char_tmp); 
-            lens = strlen((char *)_moden.lte_4G_TX_data);            
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'PUBUUID':'%s',",_moden.moden_uuid_md5); 
             lens = strlen((char *)_moden.lte_4G_TX_data);
             sprintf((char *)&_moden.lte_4G_TX_data[lens],(const char *)"'STIME': '%d-%02d-%02d:%02d:%02d:%02d',",

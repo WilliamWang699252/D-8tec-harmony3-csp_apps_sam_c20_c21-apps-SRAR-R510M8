@@ -56,7 +56,7 @@ extern "C" {
 #ifdef message_debug_ON
     #define AT_UART_DEBUG_ON
     #define AT_CAN_DEBUG_ON
-    //#define AT_IOT_DEBONG_ON
+    #define AT_IOT_DEBONG_ON
 #endif
 
 typedef struct
