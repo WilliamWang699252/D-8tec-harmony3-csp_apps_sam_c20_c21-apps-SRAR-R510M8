@@ -30,6 +30,8 @@
 MODEN_COMMAND_DATA _moden_cmd_data;
 MODEN_DATA _moden;
 
+extern void ClrWDT(void);
+
 MODEN_STATES readmodenstatue(void){
   
     return  (_moden.state);
@@ -53,6 +55,7 @@ void init_moden(void){
     _moden.AT_state = _NONE_AT_CMD;
     _moden.AT_READ_state = _AT_RAED_LISTEN_CMD;
     memset(_moden.moden_uuid_md5,0,sizeof(_moden.moden_uuid_md5));
+    _moden.null=0;
     _moden.lte_4G_TX_flag = 0;
     memset(_moden.lte_4G_TX_data,0,sizeof(_moden.lte_4G_TX_data));
     _moden.lte_4G_RX_flag = 0;
@@ -1517,7 +1520,7 @@ void SendATCOmmand(void){
                 _moden_cmd_data.state = COMMAND_OK;
                 memcpy(platformrxbuffer,rxBuffer,strlen((const char *)rxBuffer));
                 memset(rxBuffer,0,sizeof(rxBuffer));     
-                nBytesRead = 0;
+                nBytesRead = 0;               
             }
             else if(strstr((const char *)rxBuffer,(const char *)"ERROR\r\n") != 0){
                 _moden_cmd_data.state = COMMAND_ERROR;
@@ -1860,6 +1863,12 @@ void SendATCOmmand(void){
                 memcpy(platformrxbuffer,rxBuffer,strlen((const char *)rxBuffer));
                 memset(rxBuffer,0,sizeof(rxBuffer));     
                 nBytesRead = 0;
+                
+                if(at_MQTT_BIDIR_AUTH_LOGIN_FLOW_state_bak == _AT_UPSD3_CMD){
+                    ClrWDT();
+                    SYSTICK_DelayMs(3000);
+                    ClrWDT();
+                }
             }
             else if(strstr((const char *)rxBuffer,(const char *)"ERROR\r\n") != 0){
                 _moden_cmd_data.state = COMMAND_ERROR;

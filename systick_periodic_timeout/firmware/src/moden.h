@@ -184,6 +184,7 @@ typedef struct MODEN_DATA
    uint16_t AT_state;
    uint16_t AT_READ_state;
    uint8_t moden_uuid_md5[32];
+   uint8_t null;
    uint8_t lte_4G_TX_flag;
    uint8_t lte_4G_TX_data[UART_TX_RX_SIZE];
    uint8_t lte_4G_RX_flag;

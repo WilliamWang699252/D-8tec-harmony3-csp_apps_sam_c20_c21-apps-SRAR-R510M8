@@ -12,7 +12,7 @@
 
 #define CGPSINFO_MAX_LEN				(64)
 
-#define IOT_SEND_DATA_MS    (1000*60) //1min
+#define IOT_SEND_DATA_MS    (1000*10) //10SEC
 
 #define IOT_TIMEOUT_SEC  (5*60)  //5MIN
 
