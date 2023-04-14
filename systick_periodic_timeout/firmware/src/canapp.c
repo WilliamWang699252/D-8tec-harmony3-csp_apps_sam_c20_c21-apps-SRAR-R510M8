@@ -62,9 +62,6 @@ volatile bool STATUS_RX_PREPARE=true;
 volatile bool STATUS_RX_COMPLETED=false;
 volatile bool STATUS_TX_PREPARE=false;
 
-void ClearRx0(void){
-    memset(rx0_buf,0,(sizeof rx0_buf));
-}
 void ClearRx0buffeerarr(void){
     memset(_canrx0buffer,0,(sizeof _canrx0buffer));
 }
@@ -207,7 +204,7 @@ void init_can(void){
 }
 void can_init(void){
 //	BaseType_t ret;
-   ClearRx0();
+   //ClearRx0();
    ClerCAN_ECU();
    enable_CAN();
    CAN0_MessageRAMConfigSet (Can0MessageRAM);

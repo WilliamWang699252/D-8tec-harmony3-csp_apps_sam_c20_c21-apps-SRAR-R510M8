@@ -96,7 +96,7 @@ void updateiotodo(uint32_t odo){
 
 void iot_main(void){
     
-    if((_moden.lte_4G_TX_flag == 0) && ((timer1ms - iot_send_data_tick) > IOT_SEND_DATA_MS)){
+    if((_moden.lte_4G_TX_flag == 0) && ((timer1ms - iot_send_data_tick) > IOT_SEND_DATA_MS) && (_moden.AT_state >= 0x0B00)){
         iot_data_pack(0);
         _moden.lte_4G_TX_flag = 1;
         iot_send_data_tick = timer1ms;

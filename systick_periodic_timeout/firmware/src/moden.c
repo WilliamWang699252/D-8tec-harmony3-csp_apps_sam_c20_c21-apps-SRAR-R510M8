@@ -27,6 +27,8 @@
 #define AT_ERROR_RESET_INITIAL_COUNT 1
 #define AT_GPS_READ_TIME                                      (1000*10) //10SEC 
 
+#define CSQ_RESET_LEVEL 80
+
 MODEN_COMMAND_DATA _moden_cmd_data;
 MODEN_DATA _moden;
 
@@ -1972,7 +1974,7 @@ void SendATCOmmand(void){
             #endif
             break;
         case _AT_UGPS1_CMD:
-            sprintf(buffer,"AT+UGPS=1,9,67\r\n");
+            sprintf(buffer,"AT+UGPS=1,0,67\r\n");
             SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));
             at_GPS_state_bak = _AT_UGPS1_CMD;
             _moden.AT_state = _AT_GPS_SENDING;
@@ -2008,6 +2010,18 @@ void SendATCOmmand(void){
             #endif              
                 
             break;            
+        case _AT_CSQ4_CMD:
+			sprintf(buffer,"AT+CSQ\r\n");
+            SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));
+            at_GPS_state_bak = _AT_CSQ4_CMD;
+            _moden.AT_state = _AT_GPS_SENDING;
+            //_moden_cmd_data.state = COMMAND_SENDING;
+            at_GPS_tick = timer1ms;      
+            
+             #ifdef AT_UART_DEBUG_ON
+				uart_debug_megssage((uint8_t*)buffer, strlen(buffer));
+            #endif
+            break;				            
         case _AT_UGRMC2_CMD:
             sprintf(buffer,"AT+UGRMC?\r\n");
             SERCOM1_USART_Write((uint8_t*)buffer, strlen(buffer));
@@ -2093,9 +2107,27 @@ void SendATCOmmand(void){
                 uart_debug_megssage((uint8_t*)platformrxbuffer, strlen((char *)platformrxbuffer));
             #endif
             
-            if(at_GPS_state_bak != _AT_UGRMC2_CMD)
+            if(at_GPS_state_bak != _AT_UGRMC2_CMD){
+                if(at_GPS_state_bak == _AT_CSQ4_CMD){
+					char *adr,value;
+									
+					adr = strstr((char *)platformrxbuffer,",");
+					adr +=1;
+									
+					value = atoi(adr);
+									
+					if(value >= CSQ_RESET_LEVEL){
+						_moden.lte_4G_TX_error_count++;
+										
+						#ifdef AT_UART_DEBUG_ON
+						sprintf(tmp,"_AT_GPS  CSQ LEVEL LOW RESET\r\n");   
+						uart_debug_megssage((uint8_t*)tmp, strlen(tmp));										
+						#endif										
+					}								
+				}							
+                
                 _moden.AT_state = at_GPS_state_bak+1;
-            else{
+            }else{
                 char *adr;
                 float latitude,longitude,tmp_float;
                 int32_t tmp1_int32; 
@@ -2177,6 +2209,14 @@ void SendATCOmmand(void){
                         sprintf(tmp,"latitude= %s  longitude= %s\r\n",(char *)_moden.lte_4G_latitude,(char *)_moden.lte_4G_longitude);
                         uart_debug_megssage((uint8_t*)tmp, strlen(tmp));
                     #endif
+                }
+                else{
+                    memset(_moden.lte_4G_latitude,0,sizeof(_moden.lte_4G_latitude));
+                    memset(_moden.lte_4G_longitude,0,sizeof(_moden.lte_4G_longitude));
+                    sprintf((char*)_moden.lte_4G_latitude,(char*)"999");
+                    sprintf((char*)_moden.lte_4G_longitude,(char*)"999");
+                    sprintf(tmp,"latitude= %s  longitude= %s\r\n",(char *)_moden.lte_4G_latitude,(char *)_moden.lte_4G_longitude);
+                    uart_debug_megssage((uint8_t*)tmp, strlen(tmp));               
                 }
                 
                 memset(platformrxbuffer,0,sizeof(platformrxbuffer));
